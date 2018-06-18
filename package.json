@@ -71,6 +71,7 @@
   },
   "dependencies": {
     "airbnb-browser-shims": "^2.1.0",
+    "axios": "^0.18.0",
     "babel-polyfill": "6.26.0",
     "body-parser": "1.18.2",
     "compression": "1.7.2",

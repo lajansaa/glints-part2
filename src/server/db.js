@@ -4,10 +4,10 @@ let configs;
 
 if (process.env.NODE_ENV == 'development') {
   configs = {
-    user: process.env.DB_USER,
-    host: process.env.DB_HOST,
-    database: process.env.DB_DATABASE,
-    port: process.env.DB_PORT
+    user: 'Isa',
+    host: '127.0.0.1',
+    database: 'glints',
+    port: 5432
   };
 } else {
   configs = {
