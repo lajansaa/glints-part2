@@ -15,7 +15,6 @@ if (process.env.NODE_ENV == 'development') {
     ssl: true
   };
 }
-
 const pool = new pg.Pool(configs);
 
 pool.on('error', function (err) {
