@@ -1,16 +1,17 @@
 const fs = require('fs');
+const path = require('path');
 let finalString = '';
 const hourMinObj = {};
 const daysObj = {};
 
 // generate sql to populate hour_min table
-function hourMinSql() {
+function hourMinSql(outputPath) {
   let id = 1;
   for (let i = 1; i <= 12; i++) {
     ['00', '30'].forEach((j) => {
       ['am', 'pm'].forEach((k) => {
         const sql = `INSERT INTO hour_min (id, hour, min, am_pm) VALUES (${id}, '${i}', '${j}', '${k}');\n`;
-        fs.appendFileSync('./seed.sql', sql);
+        fs.appendFileSync(outputPath, sql);
         if (j == '00') {
           hourMinObj[i + k] = id;
         } else {
@@ -23,30 +24,31 @@ function hourMinSql() {
 }
 
 // generate sql to populate days table
-function daysSql() {
+function daysSql(outputPath) {
   let id = 1;
   ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].forEach((day) => {
     let sql = `INSERT INTO days (id, name) VALUES (${id}, '${day}');\n`;
-    fs.appendFileSync('./seed.sql', sql);
+    fs.appendFileSync(outputPath, sql);
     daysObj[day] = id;
     id++;
   })
 }
 
 // generate sql to populate days table
-function openingHoursSql(filePath) {
-  fs.readFile(filePath, 'utf8', (err, data) => {
+function openingHoursSql(inputPath, outputPath) {
+  fs.readFile(inputPath, 'utf8', (err, data) => {
     const dataArr = data.split("\n");
     let id = 1;
     dataArr.forEach((row, index) => {
       const rowArr = row.split('","');
       // remove leading quotes
       const restaurantName = rowArr[0].substr(1);
-      const restaurantNameSql = `INSERT INTO restaurants (id, name) VALUES (${index+1}, $$${restaurantName}$$);\n`;
-      fs.appendFileSync('./seed.sql', restaurantNameSql);
       // remove trailing quotes
-      const openingHours = rowArr[1].slice(0, -1).split(" / ");
-      openingHours.forEach((opening) => {
+      const openingHours = rowArr[1].slice(0, -1);
+
+      const restaurantNameSql = `INSERT INTO restaurants (id, name, display_hours) VALUES (${index+1}, $$${restaurantName}$$, $$${openingHours}$$);\n`;
+      fs.appendFileSync(outputPath, restaurantNameSql);
+      openingHours.split(" / ").forEach((opening) => {
         const openingArr = opening.split(/[,|\s]+/);
         const days = [];
         let start_time_id, end_time_id;
@@ -76,7 +78,7 @@ function openingHoursSql(filePath) {
         })
         days.forEach((day) => {
           let openingHoursSql = `INSERT INTO opening_hours (id, restaurant_id, start_time_id, end_time_id, day_id) VALUES (${id}, ${index+1}, ${start_time_id}, ${end_time_id}, ${day});\n`;
-          fs.appendFileSync('./seed.sql', openingHoursSql);
+          fs.appendFileSync(outputPath, openingHoursSql);
           id++;
         })
       })
@@ -84,11 +86,14 @@ function openingHoursSql(filePath) {
   })
 }
 
-fs.exists('./seed.sql', (exists) => {
+const seedFilePath = path.join(__dirname, 'seed.sql');
+const dataFilePath = path.join(__dirname, 'data.csv');
+
+fs.exists(seedFilePath, (exists) => {
   if (exists) {
-    fs.unlinkSync('./seed.sql');
+    fs.unlinkSync(seedFilePath);
   }
-  hourMinSql();
-  daysSql();
-  openingHoursSql('./data.csv');
+  hourMinSql(seedFilePath);
+  daysSql(seedFilePath);
+  openingHoursSql(dataFilePath, seedFilePath);
 })
