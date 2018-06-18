@@ -30,8 +30,19 @@ const getRestaurants = (req, res) => {
   })
 }
 
+const searchRestaurants = (req, res) => {
+  db.userDB.searchRestaurants(req.params, (err, queryResults) => {
+    if (err) {
+      console.error(err)
+    } else {
+      res.send(queryResults);
+    }
+  })
+}
+
 module.exports = {
   getDays,
   getOpeningHours,
-  getRestaurants
+  getRestaurants,
+  searchRestaurants
 }
