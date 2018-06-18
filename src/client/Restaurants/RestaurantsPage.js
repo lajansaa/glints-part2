@@ -1,5 +1,6 @@
 /* eslint-disable */
 import React, { Component } from 'react';
+import { Link } from 'react-router-dom';
 
 class RestaurantsPage extends Component {
 
@@ -33,7 +34,7 @@ class RestaurantsPage extends Component {
 
     return (
       <div>
-        <h1>Restaurants</h1>
+        <h1>Restaurants <Link to={'/collections'} style={{ fontSize: '1rem', color: 'black'}}>Collections</Link></h1>
         <div style={{ margin: '50px 0' }}>
           <label>Search by Day: </label>
           <select onChange={(e) => {this.props.handleDaysChange(e.target.value)}}>

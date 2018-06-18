@@ -1,5 +1,6 @@
 /* eslint-disable */
 import React, { Component } from 'react';
+import { Link } from 'react-router-dom';
 
 class CollectionsPage extends Component {
 
@@ -20,7 +21,7 @@ class CollectionsPage extends Component {
 
     return (
       <div>
-        <h1>Collections</h1>
+        <h1>Collections <Link to={'/'} style={{ fontSize: '1rem', color: 'black'}}>Restaurants</Link></h1>
         
       </div>
     )
